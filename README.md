@@ -4,7 +4,50 @@ A tiny HTTP service that echoes back the caller's IP address. Zero external
 dependencies. Optional token auth, optional reverse-proxy awareness, and `.env`
 based configuration.
 
-## Run
+## Install (Linux, systemd)
+
+One-line install of the latest release. Downloads the binary, installs a
+systemd unit that restarts on crash, seeds a config file, and starts the
+service:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/bborn2/go-ip-echo/main/install.sh | sudo bash
+```
+
+The installer prompts for the port (default `8080`) and auto-generates a
+random `TOKEN`, printing it at the end — save it, it's what you authenticate
+with. To skip the prompts, set values inline and they're used as-is:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/bborn2/go-ip-echo/main/install.sh \
+  | sudo PORT=9000 TOKEN=secret TRUST_PROXY=1 bash
+```
+
+After install:
+
+```bash
+systemctl status ip-echo          # service state
+journalctl -u ip-echo -f          # follow logs
+sudo nano /opt/ip-echo/.env       # edit config, then:
+sudo systemctl restart ip-echo
+```
+
+Uninstall (pass args through the pipe with `bash -s --`):
+
+```bash
+# stop and remove the service, keep /opt/ip-echo/.env
+curl -fsSL https://raw.githubusercontent.com/bborn2/go-ip-echo/main/install.sh \
+  | sudo bash -s -- --uninstall
+
+# also remove the install dir (config included) and the service user
+curl -fsSL https://raw.githubusercontent.com/bborn2/go-ip-echo/main/install.sh \
+  | sudo bash -s -- --uninstall --purge
+```
+
+Piping a script into a root shell means trusting its contents — read
+[install.sh](install.sh) before running if that matters to you.
+
+## Run from source
 
 ```bash
 go run .
