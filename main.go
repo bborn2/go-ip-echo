@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	if err := loadDotEnv(getenv("ENV_FILE", ".env")); err != nil {
+	if err := loadEnvFiles(); err != nil {
 		log.Fatalf("loading env file: %v", err)
 	}
 
