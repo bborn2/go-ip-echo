@@ -1,0 +1,38 @@
+name: Build and release (linux/amd64)
+
+on:
+  push:
+    # triggers on tags like v1.0.0, v2.3.4
+    tags:
+      - "v*"
+
+permissions:
+  contents: write # required to create releases / upload assets
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+
+      - name: Build linux/amd64 binary
+        run: |
+          set -e
+          mkdir -p dist
+          # Build a static Linux amd64 binary
+          GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags "-s -w" -o dist/ip-echo-linux-amd64 ./...
+          chmod +x dist/ip-echo-linux-amd64
+
+      - name: Create GitHub Release and upload artifact
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/ip-echo-linux-amd64
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
