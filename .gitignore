@@ -1,0 +1,6 @@
+# Local env config (never commit real secrets)
+.env
+
+# Build output
+/go-ip-echo
+*.exe
